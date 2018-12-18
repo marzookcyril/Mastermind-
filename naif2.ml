@@ -26,7 +26,7 @@ module Naif2 :
 
 			
 	
-	let rec filtre essais possibles = 
+	let filtre essais possibles = 
 		match essais with
 		|(l , Some(x,y)) -> List.fold_left ( fun acc t -> if (Code.reponse t l) = Some(x,y) then t :: acc else acc ) [] possibles 
 		|_ -> [];;
