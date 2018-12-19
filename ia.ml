@@ -1,6 +1,7 @@
 (** Algorithmes de recherche de code *)
 open Code;;
-open Naif1;;
+open Naif1
+open Naif2;;
 
 module IA :
 	sig
@@ -26,8 +27,12 @@ module IA :
 			*@return la nouvelle liste de codes possibles
 			*)
 		val filtre : int -> (Code.t * (int*int) option) -> Code.t list -> Code.t list
+		
 	end = struct
 		
 		let nombre_methodes = 3;; 
+		
+		
+	
 		
 	end;;
