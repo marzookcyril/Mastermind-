@@ -76,17 +76,24 @@ let cliccouleur a b couleur =
 
 let valider a b add = 
 	if a >= 345 && a <= 425 && b >= 33 && b <= 73 then	
-		(rond (point_color 498 53) 498 (53 + add * 66);
-		rond (point_color 564 53) 564 (53 + add * 66);
-		rond (point_color 630 53) 630 (53 + add * 66);
-		rond (point_color 696 53) 696 (53 + add * 66))
+		(rond (point_color 498 53) 498 (53 + (add * 66));
+		rond (point_color 564 53) 564 (53 + (add * 66));
+		rond (point_color 630 53) 630 (53 + (add * 66));
+		rond (point_color 696 53) 696 (53 + (add * 66)))
 	else draw_rect 10 10 1 1 ;;
+
+let pionplace a b add = 
+	if (add < 11 && add <> 0) then 
+		(for i = 1 to a do fill_rect (340 + 20*i) (45 + (add * 66)) 15 15 done;
+		for i = 1 to b do draw_rect (340 + (a+i)*20) (45 + (add * 66)) 15 15 done)
+		else draw_rect 10 10 1 1;;
 
 
 let rec boucle ad = 
+	if ad > 10 then (moveto 550 750 ; draw_string "C'est perdu.") else 
 	let bu = wait_next_event [Button_down] in
 	if bu.mouse_x >= 345 && bu.mouse_x <= 425 && bu.mouse_y >= 33 && bu.mouse_y <= 73 then
-		(valider bu.mouse_x bu.mouse_y ad ; boucle (ad+1)) else
+		(valider bu.mouse_x bu.mouse_y ad ; pionplace (Random.int 5) (Random.int 5) ad ; boucle (ad+1)) else
 		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); boucle ad);;
 
 boucle 0 ;;
