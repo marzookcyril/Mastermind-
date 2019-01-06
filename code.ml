@@ -61,6 +61,7 @@ module Code :
 		
 		let couleurs_possibles = ["blanc";"bleu";"jaune";"noir";"rouge";"vert"];;
 		
+		(** A refaire avec les fonctions list.left*)
 		let rec compare c1 c2 = 
 			match (c1,c2) with 
 			|((t1 :: q1),(t2 :: q2)) -> if t1 > t2 then 1 
@@ -90,23 +91,20 @@ module Code :
 		
 		let rec combinaisonTuple n m =
 		  match (n,m) with
-			  |(x,y) when x + y <= 4 ->  [(x,y)] @ (combinaisonTuple n (m+1))
-			  |(x,y) when x + y > 4  && x <= 4 -> combinaisonTuple (n+1) 0
+			  |(x,y) when x + y <= nombre_pions ->  [(x,y)] @ (combinaisonTuple n (m+1))
+			  |(x,y) when x + y > nombre_pions  && x <= nombre_pions -> combinaisonTuple (n+1) 0
 			  |_ -> [];; 
 			  
 		let toutes_reponses = List.filter (fun t -> (t <> (3,1))) (combinaisonTuple 0 0);;
 	
 	
 	
-		let rec supprime_un a l1 =
-			match l1 with 
-				|( b :: c ) when b = a -> c
-				|( b :: c )   -> b :: supprime_un a c
-				|_   -> l1;;
+	let supprime a l1 = 
+		List.filter (fun t -> if List.mem t [a] then false else true) l1;;
 
 	let rec couleur code vrai_code acc = 
 			match code with 
-			| (u :: v) -> if List.mem u vrai_code then couleur v (supprime_un u vrai_code) (acc+1) 
+			| (u :: v) -> if List.mem u vrai_code then couleur v (supprime u vrai_code) (acc+1) 
 						else
 							couleur v vrai_code acc 
 			| _ -> acc;; 

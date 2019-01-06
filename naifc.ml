@@ -1,7 +1,7 @@
-(** Algorithme d'ia naif *)
+(** Algorithme d'ia naif ne prenant pas en compte les couleurs *)
 open Code;;
 
-module Naif2 : 
+module Naifc : 
 	sig 
 			
 		(** Choisit un code a proposer 
@@ -22,19 +22,26 @@ module Naif2 :
 	
 	(** on enleve de la liste de possible tout les codes deja essayés (dans essais) 
 		puis on en choisis un aléatoirement *) 
-		
 	let choix essais possibles = 
 		let l = List.filter ( fun t -> if List.mem t essais then false else true) possibles in 
 			List.nth l (Random.int (List.length l));;
 
-			
-	(** On prend dans la liste des possibles tout les éléments ayant 
-		la même reponse que l'essai par rapport au code secret que la reponse de l'essai
-		avec les autres codes possibles *)
 		
+	(** Cette fonction permet d'enlever l'option sur le tuple et recuperé le 
+		premier élément qui correspond aux pions bien plavés sans prendre en 
+		compte le resultat des couleurs *)
+	let without_Some a = 
+		match a with 
+		|Some(x,y) -> y
+		|_-> 0;;
+		
+	
+	(** Ici il faut prendre en compte seulement les pions bien placés 
+		et pas les couleurs *)
 	let filtre essais possibles = 
 		match essais with
-		|(l , Some(x,y)) -> List.fold_left ( fun acc t -> if (Code.reponse t l) = Some(x,y) then t :: acc else acc ) [] possibles 
+		|(l , Some(x,y)) -> List.fold_left ( fun acc t -> if without_Some (Code.reponse t l) = x then t :: acc else acc ) [] possibles 
 		|_ -> [];;
 	
 end;;
+

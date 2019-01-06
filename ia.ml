@@ -1,7 +1,9 @@
 (** Algorithmes de recherche de code *)
-open Code;;
+open Code
 open Naif1
-open Naif2;;
+open Naif2
+open Naifc
+open Knuth;;
 
 module IA :
 	sig
@@ -30,9 +32,41 @@ module IA :
 		
 	end = struct
 		
-		let nombre_methodes = 3;; 
 		
 		
+		(** 1 : ia naif aléatoire 
+			2 : ia plutôt forte faite par nous mêmes 
+			3 : ia ne prenant en compte que les couleurs 
+			4 : knuth *)
+		let nombre_methodes = 4 ;; 
+		
+		
+		(** On applique la fonction choix de chaque ia excepté celle de knuth
+		  * car a chaque etape de knuth nous avons besoin de la reponse car 
+		  * il faut utiliser filtre a chaque étape et il manque le parametre reponse*)
+		let choix x essais possible = 
+			match x with 
+			|a when a = 1 -> Naif1.choix essais possible
+			|a when a = 2 -> Naif2.choix essais possible
+			|a when a = 3 -> Naifc.choix essais possible
+			|_ -> failwith(" il n'y a pas autant d'ia ");;
+		
+		(** De même on applique la fonction filtre de chaque ia excepté celle de : 
+		  * l'ia Naif1 car le code est choisi aléatoirement dans la fonction choix *)
+		let filtre x essais possible = 
+			match x with 
+			|a when a = 2 -> Naif2.filtre essais possible
+			|a when a = 3 -> Naifc.filtre essais possible
+			|a when a = 4 -> Knuth.filtre essais possible
+			|_ -> failwith(" il n'y a pas autant d'ia ");;
+		
+		let choisir_algo x essais possible = 
+			match x with 
+			|a when a = 1 -> Naif1.choix [fst(essais)] possible
+			|a when a = 2 -> Naif2.choix [fst(essais)] (Naif2.filtre essais possible)
+			|a when a = 3 -> Naifc.choix [fst(essais)] (Naifc.filtre essais possible)
+			|a when a = 4 -> Knuth.knuths essais possible
+			|_ -> failwith(" il n'y a pas autant d'ia ");;
 	
 		
 	end;;
