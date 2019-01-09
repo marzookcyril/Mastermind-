@@ -191,7 +191,7 @@ let chcouleurcode a b couleur =
 let rec couleurpourlecode a tableau = 
 	let bu = wait_next_event [Button_down] in
 	if bu.mouse_x >= 545 && bu.mouse_x <= 625 && bu.mouse_y >= 343 && bu.mouse_y <= 383 then
-		let tableau = (recucodesecret 0) in print_string (convert (List.hd tableau))
+		let tableau = (recucodesecret 0) in tableau
 	else
 		(chcouleurcode bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); couleurpourlecode a tableau);;
 
