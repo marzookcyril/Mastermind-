@@ -1,5 +1,7 @@
 open Graphics;;
-
+open Code;;
+open Ia;;
+open Knuth;;
 (*module Interface :
 	sig 
 	
@@ -7,8 +9,8 @@ open Graphics;;
 
 	end = struct *)
 
-
 let depart () = 
+	Random.self_init();
 	open_graph "";
 	set_window_title "Mastermind";
 	resize_window 2000 1500;;
@@ -167,10 +169,16 @@ let rec recucode temp =
 		point_color (498 + temp*66) 53 :: recucode (temp + 1)
 	else
 		[];;
-		
+
+let rec tableau_peg t =
+	match t with 
+	|(h :: q) -> (convert h) :: tableau_peg q 
+	|_ -> [];;
+	
 let rec recucodesecret temp = 
 	if temp < k then
-		point_color (698 + temp*66) 363 :: recucodesecret (temp + 1)
+	 point_color (698 + temp*66) 363 :: recucodesecret (temp + 1) 
+		
 	else
 		[];;
 		
@@ -191,7 +199,7 @@ let chcouleurcode a b couleur =
 let rec couleurpourlecode a tableau = 
 	let bu = wait_next_event [Button_down] in
 	if bu.mouse_x >= 545 && bu.mouse_x <= 625 && bu.mouse_y >= 343 && bu.mouse_y <= 383 then
-		let tableau = (recucodesecret 0) in tableau
+		let tableau = (tableau_peg(recucodesecret 0)) in tableau
 	else
 		(chcouleurcode bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); couleurpourlecode a tableau);;
 
@@ -211,12 +219,12 @@ let choixducodesecret () =
 	
 	
 (**Boucle principale permettant de jouer tout le reste*)
-let rec boucle level ad tableau = 
+let rec boucle level ad code code_secret = 
 	if ad > t then (moveto 550 (75 * t) ; draw_string "C'est perdu.") else 
 	let bu = wait_next_event [Button_down] in
 	if bu.mouse_x >= 345 && bu.mouse_x <= 425 && bu.mouse_y >= 33 && bu.mouse_y <= 73 then
-		(valider bu.mouse_x bu.mouse_y ad ; pionplace (Random.int 5) (Random.int 5) ad; let tableau = (recucode 0) in boucle level (ad+1) tableau) else
-		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); boucle level ad tableau);;
+		(valider bu.mouse_x bu.mouse_y ad ; pionplace (Random.int 5) (Random.int 5) ad; let tableau = tableau_peg((recucode 0)) in boucle level (ad+1) tableau code_secret) else
+		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); boucle level ad code code_secret);;
 		
 		
 let choixniveau () = 
@@ -238,19 +246,25 @@ let choixniveau () =
 	set_color black;
 	draw_string "Level 4" ;
 	
+	
+	
+	
 	let bu = wait_next_event [Button_down] in
 		if bu.mouse_x >= 350 && bu.mouse_x <= 450 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-			(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 1 0 [] (Ia.choix 1 [] Code.tous) )
-					else boucle 1 0 [] choixducodesecret())
+			(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 1 0 [] (IA.choix 1 [] Code.tous))
+					else let u = (choixducodesecret()) in clear_graph() ; toutecreation() ; (boucle 1 0 [] u))
 		else 
 			if bu.mouse_x >= 600 && bu.mouse_x <= 700 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-				(clear_graph () ;toutecreation () ; boucle 2 0 [])
+				(clear_graph () ; if 1+Random.int 2 = 1 then (toutecreation () ; boucle 2 0 [] (IA.choix 1 [] Code.tous))
+					else let u = (choixducodesecret ()) in clear_graph() ;toutecreation() ; (boucle 2 0 [] (u)))
 			else
 				if bu.mouse_x >= 850 && bu.mouse_x <= 950 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-					(clear_graph () ; toutecreation () ; boucle 3 0 [])
+					(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 3 0 [] (IA.choix 1 [] Code.tous))
+					else let u = (choixducodesecret()) in clear_graph() ;toutecreation() ; (boucle 3 0 [] (u)))
 				else 
 					if bu.mouse_x >= 1100 && bu.mouse_x <= 1200 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-						(clear_graph () ; toutecreation () ; boucle 4 0 []);;
+						(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 4 0 [] (IA.choix 1 [] Code.tous))
+					else let u = (choixducodesecret()) in clear_graph() ;toutecreation() ; (boucle 4 0 [] (u)))
 
 let rec menu () =
 	depart();
@@ -260,7 +274,7 @@ let rec menu () =
 			(clear_graph() ; choixniveau ())
 		else menu ();;
 		
-depart ();;
+(*depart ();;*)
 (*choixducodesecret();;*)
 menu ();; 
 (*end;; *)
