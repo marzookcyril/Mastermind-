@@ -240,7 +240,8 @@ let choixniveau () =
 	
 	let bu = wait_next_event [Button_down] in
 		if bu.mouse_x >= 350 && bu.mouse_x <= 450 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-			(clear_graph () ; toutecreation () ; boucle 1 0 [])
+			(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 1 0 [] (Ia.choix 1 [] Code.tous) )
+					else boucle 1 0 [] choixducodesecret())
 		else 
 			if bu.mouse_x >= 600 && bu.mouse_x <= 700 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
 				(clear_graph () ;toutecreation () ; boucle 2 0 [])
@@ -260,6 +261,6 @@ let rec menu () =
 		else menu ();;
 		
 depart ();;
-choixducodesecret();;
-(*menu ();; *)
+(*choixducodesecret();;*)
+menu ();; 
 (*end;; *)
