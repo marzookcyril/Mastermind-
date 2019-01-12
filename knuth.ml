@@ -50,18 +50,13 @@ module Knuth :
 		let (u,v) = trouver_code essai possible in 
 			v;;
 
-	(*let rec jouer code_secret essais possible acc =
-		match essais with 
-		|(l , Some(x,y)) -> if l = code_secret then  acc 
-							else
-								let r = knuth essais possible in 
-								jouer code_secret (r, Code.reponse code_secret r) (filtre essais possible) acc+1
-		|_ -> failwith "non";;
-
-	
-	let essai1 = ["blanc";"blanc";"bleu";"bleu"];;
-
-	jouer ["noir"; "rouge";"bleu";"noir"] (essai1 , Code.reponse ["noir"; "rouge";"bleu";"noir"] essai1) Code.tous 1;;*)
+	let rec jouer code_secret essais possible acc =
+        match essais with 
+        |(l , Some(x,y)) when acc <= 10 -> if l = code_secret then [essais]
+                                            else
+                                                let r = knuths essais possible in 
+                                                    essais :: (jouer code_secret (r, Code.reponse code_secret r) (filtre essais possible) (acc+1))
+        |_ -> [];;
 
 
 	
