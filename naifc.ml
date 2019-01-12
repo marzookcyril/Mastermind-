@@ -28,13 +28,21 @@ module Naifc :
 
 		
 	(** Cette fonction permet d'enlever l'option sur le tuple et recuperé le 
-		premier élément qui correspond aux pions bien plavés sans prendre en 
+		premier élément qui correspond aux pions bien placés sans prendre en 
 		compte le resultat des couleurs *)
 	let without_Some a = 
 		match a with 
 		|Some(x,y) -> y
 		|_-> 0;;
 		
+		
+	(** Cette fonction permet d'enlever l'option sur le tuple et recuperé le 
+		resultat *)
+	let without_Some_Tuple a = 
+		match a with 
+		|Some(x,y) -> (x,y)
+		|_-> (0,0);;
+	
 	
 	(** Ici il faut prendre en compte seulement les pions bien placés 
 		et pas les couleurs *)

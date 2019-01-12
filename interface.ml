@@ -3,11 +3,13 @@ open Code;;
 open Ia;;
 open Knuth;;
 
+(**Ouvre une fenetre et l'initialise*)
 let depart () = 
 	Random.self_init();
 	open_graph "";
 	set_window_title "Mastermind";
 	resize_window 2000 1500;;
+
 
 let k = 4 ;; (**Nombre pions*)
 let c = 6 ;;(**Nombre couleurs*)
@@ -15,12 +17,17 @@ let t = 10 ;; (**Nombre tentatives*)
 let l = [black;white;red;green;blue;yellow];; (**Couleurs possibles*)
 
 
+(**Accueil avec boutons pour choix du mode*)
 let accueil () = 
 	draw_rect 700 400 100 50;
 	moveto 720 420;
 	draw_string "Joueur vs IA" ;;
 
 
+(**Converti la couleur d'int a string
+	*@param 	la couleur en type unit/int
+	*@return 	la couleur en type string
+	*)
 let convert n = 
 	match n with 
 	|a when a = black -> "noir" 
@@ -30,8 +37,12 @@ let convert n =
 	|a when a = blue -> "bleu"
 	|a when a = yellow  -> "jaune"
 	|_ -> "";;
-	
 
+
+(**Converti la couleur de string a int
+	*@param 	la couleur en type string
+	*@return 	la couleur en type unit/int
+	*)
 let invconvert n = 
 	match n with 
 	|a when a = "noir" -> black 
@@ -43,8 +54,7 @@ let invconvert n =
 	|_ -> 0;;
 
 
-
-(**Liste couleurs totale pour la partie en cours*
+(**Liste couleurs totale pour la partie en cours
 	*@param 	liste de couleurs possible
 	*@param 	nombre de couleurs souhaité
 	*@return 	liste avec le nombre de couleur souhaité
@@ -55,8 +65,10 @@ let rec liste_couleur l c  =
 	|(h :: [], _) -> [h]
 	|(_ ,_) -> [];;
 
+
 (**Variable prenant la liste des couleurs pour la partie*)
 let listecouleur = liste_couleur l c;;
+
 
 (**Change la couleur d'écriture
 	*@param 	liste de couleur pour la partie
@@ -68,7 +80,8 @@ let rec ch_couleur l couleur =
 	|(h :: []) -> if h = couleur then List.hd listecouleur else 0
 	|(h :: t) -> if h = couleur then List.hd t else ch_couleur t couleur 
 	|_ -> 0;;
-	
+
+
 (**Dessine la grille de jeu 
 	*@param 	variable pour le dessin correct de la grille
 	*@param 	variable pour le dessin correct de la grille
@@ -86,6 +99,7 @@ let grilleee () =
 	draw_rect (400 - 15*k) 86 (15*k + 60) (66*t);
 	fill_rect 460 86 5 (66*t);
 	draw_rect (400 - 15*k) 20 (15*k + 66*(k+1)) 66;;
+
 
 (**Dessine la grille de reponse
 	*@param variable pour le dessin correct de la grille de reponse
@@ -107,6 +121,7 @@ let rond couleur x y =
 	fill_circle x y 20;
 	set_color black;;
 
+
 (**Initialisation des parties cliquable
 	*@rond 		cercles permettant de choisir les couleurs
 	*@rect 		rectangle pour valider son choix
@@ -115,6 +130,7 @@ let rondreponse () =
 	for i = 0 to (k-1) do rond black (498 + i*66) 53 done;;
 
 
+(**Creation du bouton pour valider*)
 let boutonvalider () =
 	draw_rect 345 33 80 40;
 	moveto 350 53;
@@ -134,17 +150,18 @@ let cliccouleur a b couleur =
 		rond (ch_couleur listecouleur couleur) (498 +i*66) 53 
 	else draw_rect 10 10 1 1 done;;
 
+
 (**Valide le choix des couleurs et l'insere dans la grille 
 	*@param 	première coordonnée 
 	*@param 	seconde coordonnée
 	*@param		variable permettant le placement correcte dans la grille
 	*)
-	
 let valider a b add = 
 	for i = 0 to (k-1) do 
 	if a >= 345  && a <= 425 && b >= 33 && b <= 73 then	
 		rond (point_color (498+i*66) 53) (498+i*66) (53 + (add * 66))
 	else draw_rect 10 10 1 1 done;;
+
 
 (**Affiche la reponse au code selectionné précedemment
 	*@param 	première coordonnée 
@@ -158,17 +175,32 @@ let pionplace a b add =
 	else 
 		draw_rect 10 10 1 1;;
 
+
+(**Recupere le code et le place dans un tableau
+	*@param 	variable temporaire pour l'execution du code
+	*@return 	un tableau avec le code
+	*)
 let rec recucode temp = 
 	if temp < k then
 		point_color (498 + temp*66) 53 :: recucode (temp + 1)
 	else
 		[];;
 
+
+(**Transforme le code d'int en code de string
+	*@param 	code en int
+	*@return 	code en string
+	*)
 let rec tableau_peg t =
 	match t with 
 	|(h :: q) -> (convert h) :: tableau_peg q 
 	|_ -> [];;
 	
+	
+(**Recupere le code secret  et le place dans un tableau
+	*@param 	variable temporaire pour l'execution du code
+	*@return 	un tableau avec le code secret
+	*)
 let rec recucodesecret temp = 
 	if temp < k then
 	 point_color (698 + temp*66) 363 :: recucodesecret (temp + 1) 
@@ -176,6 +208,8 @@ let rec recucodesecret temp =
 	else
 		[];;
 		
+		
+(**Creer la totalite des grilles de jeu*)
 let toutecreation () = 
 	grilleee ();
 	grille 1 1 k;
@@ -184,19 +218,31 @@ let toutecreation () =
 	boutonvalider ();;
 
 
+(**Change de couleur le rond sur lequel on clique 
+	*@param 	première coordonnée 
+	*@param 	seconde coordonnée
+	*@param 	couleur actuelle
+	*)
 let chcouleurcode a b couleur = 
 	for i = 0 to (k-1) do 
 	if a >= (678 + i*66) && a <= (718 + i*66) && b >= 343 && b <= 383 then 
 		rond (ch_couleur listecouleur couleur) (698 +i*66) 363 
 	else draw_rect 10 10 1 1 done;;
 
-let rec couleurpourlecode a tableau = 
+
+(**Recupere le code secret dans un tableau 
+	*@param 	variable temporaire
+	*@return	code secret
+	*)
+let rec couleurpourlecode tableau = 
 	let bu = wait_next_event [Button_down] in
 	if bu.mouse_x >= 545 && bu.mouse_x <= 625 && bu.mouse_y >= 343 && bu.mouse_y <= 383 then
 		let tableau = (tableau_peg(recucodesecret 0)) in tableau
 	else
-		(chcouleurcode bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); couleurpourlecode a tableau);;
+		(chcouleurcode bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); couleurpourlecode tableau);;
 
+
+(**Ensemble des fonctions pour stocker le code secret*)
 let choixducodesecret () =
 	draw_rect (600 - 15*k) 334 (15*k + 66*(k+1)) 66;
 	draw_rect 700 400 100 50;
@@ -208,18 +254,19 @@ let choixducodesecret () =
 	draw_string "cliquez ici" ;
 	moveto 550 354;
 	draw_string "pour valider" ;
-	couleurpourlecode 0 [];;
+	couleurpourlecode [];;
 
-	
+
+(**Ecran de victoire*)	
 let ecran_victoire () =
 	moveto 900 500;
 	draw_string "C'est gagne!";;
 	
 
+(**Ecran de defaite*)		
 let ecran_defaite () = 
 	moveto 900 500;
 	draw_string "C'est perdu!";;
-	
 	
 	
 (**Boucle principale permettant de jouer tout le reste*)
@@ -230,6 +277,8 @@ let rec boucle level ad code code_secret =
 		(valider bu.mouse_x bu.mouse_y ad ; pionplace (Random.int 5) (Random.int 5) ad; let tableau = tableau_peg((recucode 0)) in boucle level (ad+1) tableau code_secret) else
 		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); boucle level ad code code_secret);;
 		
+		
+(**Dessine les carres de choix de niveau*)			
 let dessin_carres_niveau () = 
 	draw_rect 350 400 100 50;
 	moveto 370 420;
@@ -249,7 +298,9 @@ let dessin_carres_niveau () =
 	set_color black;
 	draw_rect 1100 400 100 50;
 	draw_string "Level 4" ;;
-	
+
+
+(**Choix du niveau de l'ia*)	
 let rec choixniveau () = 
 
 	dessin_carres_niveau ();
@@ -272,6 +323,8 @@ let rec choixniveau () =
 										  else let u = (choixducodesecret()) in clear_graph() ; toutecreation() ; (boucle 4 0 [] (u)))
 					else choixniveau ();;
 
+
+(**Menu principale permettant de lancer le reste*)	
 let rec menu () =
 	clear_graph();
 	accueil();
