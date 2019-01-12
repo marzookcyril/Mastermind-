@@ -17,7 +17,9 @@ module Knuth :
 		*@return la nouvelle liste du code a essayer 
 		*)
 	val knuths : (Code.t * (int*int) option) -> Code.t list -> Code.t 
-
+	
+	val jouer : Code.t  -> (Code.t * (int*int) option) -> Code.t list -> int -> (Code.t * (int*int) option) list
+	
 	end = struct 
 	
 			
