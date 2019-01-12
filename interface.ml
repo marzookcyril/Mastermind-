@@ -129,7 +129,7 @@ let boutonvalider () =
 	*@param 	couleur actuelle
 	*)
 let cliccouleur a b couleur =
-	for i = 0 to k do 
+	for i = 0 to (k-1) do 
 	if a >= (478 + i*66) && a <= (518 + i*66) && b >= 33 && b <= 73 then 
 		rond (ch_couleur listecouleur couleur) (498 +i*66) 53 
 	else draw_rect 10 10 1 1 done;;
@@ -185,7 +185,7 @@ let toutecreation () =
 
 
 let chcouleurcode a b couleur = 
-	for i = 0 to k do 
+	for i = 0 to (k-1) do 
 	if a >= (678 + i*66) && a <= (718 + i*66) && b >= 343 && b <= 383 then 
 		rond (ch_couleur listecouleur couleur) (698 +i*66) 363 
 	else draw_rect 10 10 1 1 done;;
