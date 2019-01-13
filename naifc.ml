@@ -1,5 +1,6 @@
 (** Algorithme d'ia naif ne prenant pas en compte les couleurs *)
 open Code;;
+Random.self_init();;
 
 module Naifc : 
 	sig 
@@ -27,7 +28,7 @@ module Naifc :
 			List.nth l (Random.int (List.length l));;
 
 		
-	(** Cette fonction permet d'enlever l'option sur le tuple et recuperé le 
+	(** Cette fonction permet d'enlever l'option sur le tuple et recuperer le 
 		premier élément qui correspond aux pions bien placés sans prendre en 
 		compte le resultat des couleurs *)
 	let without_Some a = 

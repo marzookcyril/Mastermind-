@@ -2,6 +2,9 @@ open Graphics;;
 open Code;;
 open Ia;;
 open Knuth;;
+open Naif1;;
+open Naif2;;
+open Naifc;;
 
 (**Ouvre une fenetre et l'initialise*)
 let depart () = 
@@ -20,9 +23,21 @@ let essai1 = ["blanc";"blanc";"bleu";"bleu"]
 (**Accueil avec boutons pour choix du mode*)
 let accueil () = 
 	draw_rect 700 400 100 50;
-	moveto 720 420;
-	draw_string "Joueur vs IA" ;;
+	moveto 715 420;
+	draw_string "Joueur vs IA" ;
+	draw_rect 950 400 100 50;
+	moveto 953 420;
+	draw_string "Joueur vs Joueur";;
 
+
+let choisir_algo x essais possible = 
+	match x with 
+	|a when a = 1 -> Naif1.choix [fst(essais)] possible
+	|a when a = 2 -> Naif2.choix [fst(essais)] (Naif2.filtre essais possible)
+	|a when a = 3 -> Naifc.choix [fst(essais)] (Naifc.filtre essais possible)
+	|a when a = 4 -> Knuth.knuths essais possible
+	|_ -> failwith(" il n'y a pas autant d'ia ");;
+	
 
 (**Converti la couleur d'int a string
 	*@param 	la couleur en type unit/int
@@ -130,6 +145,8 @@ let rondreponse () =
 	for i = 0 to (k-1) do rond black (498 + i*66) 53 done;;
 
 
+	
+
 (**Creation du bouton pour valider*)
 let boutonvalider () =
 	draw_rect 345 33 80 40;
@@ -137,6 +154,14 @@ let boutonvalider () =
 	draw_string "cliquez ici" ;
 	moveto 350 43;
 	draw_string "pour valider" ;;
+	
+(**Creation du bouton pour valider*)
+let boutonvalideria () =
+	draw_rect 345 33 80 40;
+	moveto 350 53;
+	draw_string "votre code" ;
+	moveto 350 43;
+	draw_string "secret" ;;
 
 
 (**Change de couleur le rond sur lequel on clique 
@@ -230,6 +255,16 @@ let toutecreation () =
 	grillereponse 1;
 	rondreponse ();
 	boutonvalider ();;
+	
+	
+	
+(**Creer la totalite des grilles de jeu*)
+let toutecreationia () = 
+	grilleee ();
+	grille 1 1 k;
+	grillereponse 1;
+	boutonvalideria ();;
+
 
 
 (**Change de couleur le rond sur lequel on clique 
@@ -291,36 +326,37 @@ let ecran_defaite () =
 	
 	
 (**Boucle principale permettant de jouer tout le reste*)
-let rec boucle ad code code_secret = 
+let rec boucle ad code_secret = 
 	if ad > t then (moveto 550 (75 * t)) else 
 	let bu = wait_next_event [Button_down] in
 	if bu.mouse_x >= 345 && bu.mouse_x <= 425 && bu.mouse_y >= 33 && bu.mouse_y <= 73 then
-		(valider ad ; pionplace (Random.int 5 , Random.int 5) ad; let tableau = tableau_peg((recucode 0)) in boucle (ad+1) tableau code_secret) 
+		(valider ad ; let tableau = tableau_peg((recucode 0)) in (pionplace (desome ((Code.reponse tableau code_secret)))) ad;boucle (ad+1) code_secret) 
 	else
-		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); boucle ad code code_secret);;
+		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); boucle ad code_secret);;
 		
 		
 		
 		
-(*let supprime a l1 = List.filter (fun t -> if List.mem t [a] then false else true) l1;;
+let supprime a l1 = List.filter (fun t -> if List.mem t [a] then false else true) l1;;
 
-let rec jouer level codesecret essais possible acc = match essais with |(l , Some(x,y)) when acc <= 10 -> if l = codesecret then [essais] else let r = choisiralgo level essais possible in 
+let rec jouer level codesecret essais possible acc = 
+			match essais with 
+			|(l , Some(x,y)) when acc <= 10 -> if l = codesecret then [essais] else let r = choisir_algo level essais possible in 
                                                     if (level > 1) then 
-                                                        essais :: (jouer level codesecret (r, Code.reponse codesecret r) (filtre level essais possible) (acc+1))
+                                                        essais :: (jouer level codesecret (r, Code.reponse codesecret r) (IA.filtre level essais possible) (acc+1))
                                                     else 
                                                         essais :: (jouer level codesecret (r, Code.reponse codesecret r) (supprime l possible) (acc+1))
 
-            | -> [];;*)
-
+            |_-> [];;
 
 let rec boucleia level code_secret a = 
-
 	let bu = wait_next_event [Button_down] in
+
 	dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a));
 	pionplace (desome(snd (List.nth (code_secret) a))) (a+1); 
-    boucleia level code_secret (a+1);;
+    if ((desome(snd (List.nth (code_secret) a))) = (k,0)) || a > (t-2) then (moveto 550 (75 * t))
+    else boucleia level code_secret (a+1);;
 	
-
 
 (**Dessine les carres de choix de niveau*)			
 let dessin_carres_niveau () = 
@@ -351,20 +387,20 @@ let rec choixniveau () =
 	
 	let bu = wait_next_event [Button_down] in
 		if bu.mouse_x >= 350 && bu.mouse_x <= 450 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-			(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 [] (IA.choix 1 [] Code.tous))
-							 else let u = (choixducodesecret()) in clear_graph() ; toutecreation() ; (boucleia 0 (Knuth.jouer u (essai1, (Code.reponse essai1 u)) (Knuth.filtre (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
+			(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+							 else let u = (choixducodesecret()) in clear_graph() ; toutecreationia(); 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 1 u (essai1, (Code.reponse essai1 u)) Code.tous 0) 0)) 
 		else 
 			if bu.mouse_x >= 600 && bu.mouse_x <= 700 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-				(clear_graph () ; if 1+Random.int 2 = 1 then (toutecreation () ; boucle 0 [] (IA.choix 1 [] Code.tous))
-								  else let u = (choixducodesecret ()) in clear_graph() ; toutecreation() ; (boucle 0 [] (u)))
+				(clear_graph () ; if 1+Random.int 2 = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+								else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 2 u (essai1, (Code.reponse essai1 u)) (IA.filtre 2 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
 			else
 				if bu.mouse_x >= 850 && bu.mouse_x <= 950 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-					(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 [] (IA.choix 1 [] Code.tous))
-									  else let u = (choixducodesecret()) in clear_graph() ; toutecreation() ; (boucle 0 [] (u)))
+					(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+									else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 3 u (essai1, (Code.reponse essai1 u)) (IA.filtre 3 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
 				else 
 					if bu.mouse_x >= 1100 && bu.mouse_x <= 1200 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-						(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 [] (IA.choix 1 [] Code.tous))
-										  else let u = (choixducodesecret()) in clear_graph() ; toutecreation() ; (boucle 0 [] (u)))
+						(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+										else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 4 u (essai1, (Code.reponse essai1 u)) (IA.filtre 4 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
 					else choixniveau ();;
 
 
@@ -375,13 +411,12 @@ let rec menu () =
 	let bu = wait_next_event [Button_down] in
 		if bu.mouse_x >= 700 && bu.mouse_x <= 800 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
 			(clear_graph() ; choixniveau () ; let u = wait_next_event [Button_down] in menu ())
-		else (clear_graph(); menu ());;
+		else 
+			if bu.mouse_x >= 950 && bu.mouse_x <= 1150 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+				(clear_graph () ; let u = choixducodesecret () in clear_graph () ; (toutecreation () ; boucle 0 u); clear_graph() ; let v = choixducodesecret () in clear_graph () ; (toutecreation () ; boucle 0 v))
+			else 
+				(clear_graph(); menu ());;
 		
 depart ();;
-(*accueil();;
-toutecreation();;
-boucleia 0 ["blanc";"vert";"blanc";"bleu"] 0 ;;
-let bu = wait_next_event [Button_down];;*)
-(*choixducodesecret();;*)
 menu ();; 
 
