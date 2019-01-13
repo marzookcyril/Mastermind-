@@ -28,7 +28,7 @@ module Knuth :
 		avec les autres codes possibles *)
 	let filtre essais possibles = 
 		match essais with
-		|(l , Some(x,y)) -> List.fold_left ( fun acc t -> if (Code.reponse t l) = Some(x,y) then t :: acc else acc ) [] possibles 
+		|(l , Some(x,y)) -> List.fold_left ( fun acc t -> if (Code.reponse t l) = Some(x,y) then t :: acc else acc ) [] possibles
 		|_ -> [];;
 		
 	(** Renvoie le nombre d'élement restant dans la liste des possibles 
@@ -39,13 +39,13 @@ module Knuth :
 					
 	(** Calcule le pire cas de chaque code dans la liste des possibles *)
 	let pire_cas code possible reponse =
-		List.fold_left (fun acc t -> let x = (poid code t possible) in if x > acc then x else acc ) 0 reponse;;		
+		List.fold_left (fun acc t -> let x = (poid code t possible) in if x >= acc then x else acc ) 0 reponse;;		
 
 	(** Le principe est de prendre le codes éliminant le plus de codes dans la liste possible dans le pire des cas.
 	  * Son poids est établie par le nombre d'éléments qu'il supprime dans la liste des possibles. Et on prend le plus petits des pires poids*)	
 	let trouver_code essai possible = 
 		let l = (filtre essai possible) in 
-			List.fold_left(fun acc t -> let (u,v) = acc in let x = (pire_cas t l Code.toutes_reponses) in if x < u then (x,t) else acc )(21474836471,[""]) l;;
+			List.fold_left(fun acc t -> let (u,v) = acc in let x = (pire_cas t l Code.toutes_reponses) in if x < u then (x,t) else acc )(21474836471,[""]) possible;;
 	
 	(** Désormais on choisit le code a essayer *)
 	let knuths essai possible =

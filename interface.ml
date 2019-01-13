@@ -399,7 +399,7 @@ let rec choixniveau () =
 									else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 3 u (essai1, (Code.reponse essai1 u)) (IA.filtre 3 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
 				else 
 					if bu.mouse_x >= 1100 && bu.mouse_x <= 1200 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-						(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+						(clear_graph () ; if  2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
 										else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 4 u (essai1, (Code.reponse essai1 u)) (IA.filtre 4 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
 					else choixniveau ();;
 
