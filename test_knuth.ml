@@ -146,7 +146,7 @@ type 'a arbre_binaire =
 			moyenne (x +. float_of_int(jouer ["noir"; "rouge";"bleu";"noir"] (essai1 , reponse ["noir"; "rouge";"bleu";"noir"] essai1) (filtre (essai1 ,reponse ["noir"; "rouge";"bleu";"noir"] essai1) tous)  1)) (y-1);;
 
 
-	moyenne 0. 50;;
+	(*moyenne 0. 50;;*)
 	
 	let rec temps code i = 
 	match i with 
@@ -154,7 +154,7 @@ type 'a arbre_binaire =
 	|_ -> 0;;
 	
 	
-	
+	max_int;;
 	
 	
 	
