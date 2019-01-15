@@ -21,28 +21,29 @@ module Naifc :
 
 	end = struct 
 	
-	(** on enleve de la liste de possible tout les codes deja essayés (dans essais) 
-		puis on en choisis un aléatoirement *) 
-	let choix essais possibles = 
-		let l = List.filter ( fun t -> if List.mem t essais then false else true) possibles in 
-			List.nth l (Random.int (List.length l));;
-
+	
 		
+		let without  a = 
+		match a with 
+		|Some(x,y) -> (x,y)
+		|_-> failwith "reponse pas corecte";;
+		
+	
+	(** Apres avoir effectué le filtre, on choisit le code qui a le plus de couleur
+		en commun avec l'essais *) 
+	let choix essais possibles = 
+		let code = List.nth essais 0 in 	
+			let p = List.fold_left ( fun acc t -> let (u,v) = without (Code.reponse code t) in if v >= fst acc then (v,t) else acc) (0,[]) possibles in 
+				let (x,y)= p in
+					y;;
+							
 	(** Cette fonction permet d'enlever l'option sur le tuple et recuperer le 
 		premier élément qui correspond aux pions bien placés sans prendre en 
 		compte le resultat des couleurs *)
 	let without_Some a = 
 		match a with 
-		|Some(x,y) -> y
+		|Some(x,y) -> x
 		|_-> 0;;
-		
-		
-	(** Cette fonction permet d'enlever l'option sur le tuple et recuperé le 
-		resultat *)
-	let without_Some_Tuple a = 
-		match a with 
-		|Some(x,y) -> (x,y)
-		|_-> (0,0);;
 	
 	
 	(** Ici il faut prendre en compte seulement les pions bien placés 
