@@ -44,8 +44,8 @@ module Knuth :
 	(** Le principe est de prendre le codes éliminant le plus de codes dans la liste possible dans le pire des cas.
 	  * Son poids est établie par le nombre d'éléments qu'il supprime dans la liste des possibles. Et on prend le plus petits des pires poids*)	
 	let trouver_code essai possible = 
-		let l = (filtre essai possible) in 
-			List.fold_left(fun acc t -> let (u,v) = acc in let x = (pire_cas t Code.tous Code.toutes_reponses) in if x <= u then (x,t) else acc )(max_int,[""]) l;;
+		let l = (filtre essai Code.tous) in 
+			List.fold_left(fun acc t -> let (u,v) = acc in let x = (pire_cas t l Code.toutes_reponses) in if x <= u then (x,t) else acc )(max_int,[""]) (filtre essai possible);;
 	
 	(** Désormais on choisit le code a essayer *)
 	let knuths essai possible =

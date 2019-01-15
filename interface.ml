@@ -136,6 +136,17 @@ let rond couleur x y =
 	fill_circle x y 20;
 	set_color black;;
 
+let carre couleur x y =
+		draw_rect (x-1) (y-1) 22 22;
+		set_color couleur;
+		fill_rect x y 20 20;
+		set_color black;;
+
+let rec listtotuple tab (x,y) = 
+	match tab with 
+	|(t :: q) -> if t = "noir" then listtotuple q (x+1,y) else if t = "blanc" then listtotuple q (x,y+1) else listtotuple q (x,y)
+	|_ -> (0,0);;
+
 
 (**Initialisation des parties cliquable
 	*@rond 		cercles permettant de choisir les couleurs
@@ -145,7 +156,8 @@ let rondreponse () =
 	for i = 0 to (k-1) do rond black (498 + i*66) 53 done;;
 
 
-	
+let carrereponse () =
+	for i = 0 to (k-1) do carre red (898 + i*66) 53 done;;
 
 (**Creation du bouton pour valider*)
 let boutonvalider () =
@@ -175,6 +187,12 @@ let cliccouleur a b couleur =
 		rond (ch_couleur listecouleur couleur) (498 +i*66) 53 
 	else draw_rect 10 10 1 1 done;;
 
+
+let cliccouleurcarre a b couleur =
+	for i = 0 to (k-1) do 
+	if a >= (878 + i*66) && a <= (918 + i*66) && b >= 33 && b <= 73 then 
+		carre (ch_couleur [black;white;red] couleur) (898 +i*66) 53 
+	else draw_rect 10 10 1 1 done;;
 
 (**Valide le choix des couleurs et l'insere dans la grille 
 	*@param 	première coordonnée 
@@ -248,6 +266,15 @@ let rec recucodesecret temp =
 		[];;
 		
 		
+		
+let rec recucodecarre temp = 
+	if temp < k then
+	 point_color (891 + temp*66) 56 :: recucodesecret (temp + 1) 
+		
+	else
+		[];;
+				
+		
 (**Creer la totalite des grilles de jeu*)
 let toutecreation () = 
 	grilleee ();
@@ -255,6 +282,9 @@ let toutecreation () =
 	grillereponse 1;
 	rondreponse ();
 	boutonvalider ();;
+	
+	
+	
 	
 	
 	
@@ -313,6 +343,7 @@ let choixducodesecret () =
 	couleurpourlecode [];;
 
 
+
 (**Ecran de victoire*)	
 let ecran_victoire () =
 	moveto 900 500;
@@ -323,6 +354,31 @@ let ecran_victoire () =
 let ecran_defaite () = 
 	moveto 900 500;
 	draw_string "C'est perdu!";;
+	
+	
+let rec entreereponse a b = 
+	if a >= 755 && a <= 835 && b >= 64 && b <= 104 then
+		(let tableau = tableau_peg((recucodecarre 0)) in tableau)
+	else
+		(cliccouleurcarre a b (point_color a b) ; entreereponse a b);;
+	
+let validercarre () = 
+	draw_rect (800 - 15*k) 33 (15*k + 66*(k+1)) 66;
+	draw_rect 875 99 150 100;
+	moveto 880 179;
+	draw_string "reponse au code" ;
+	moveto 880 159;
+	draw_string "noir = bien place" ;
+	moveto 880 139;
+	draw_string "blanc = bonne couleur" ;
+	moveto 880 119;
+	draw_string "rouge = aucun des deux" ;
+	draw_rect 755 46 80 40;
+	moveto 760 64;
+	draw_string "cliquez ici" ;
+	moveto 760 54;
+	draw_string "pour valider" ;
+	carrereponse ();;
 	
 	
 (**Boucle principale permettant de jouer tout le reste*)
@@ -350,12 +406,15 @@ let rec jouer level codesecret essais possible acc =
             |_-> [];;
 
 let rec boucleia level code_secret a = 
+	let bv = wait_next_event [Button_down] in
+	(dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a));
+	validercarre());
 	let bu = wait_next_event [Button_down] in
-
-	dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a));
-	pionplace (desome(snd (List.nth (code_secret) a))) (a+1); 
-    if ((desome(snd (List.nth (code_secret) a))) = (k,0)) || a > (t-2) then (moveto 550 (75 * t))
-    else boucleia level code_secret (a+1);;
+	entreereponse bu.mouse_x bu.mouse_y;
+	if (desome(snd (List.nth (code_secret) a))) = listtotuple (tableau_peg((recucodecarre 0))) (0,0) then 
+		(pionplace (desome(snd (List.nth (code_secret) a))) (a+1); boucleia level code_secret (a+1); 
+		if ((desome(snd (List.nth (code_secret) a))) = (k,0)) || a > (t-2) then (moveto 550 (75 * t)))
+	else boucleia level code_secret (a+1);;
 	
 
 (**Dessine les carres de choix de niveau*)			
@@ -402,6 +461,8 @@ let rec choixniveau () =
 						(clear_graph () ; if  2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
 										else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 4 u (essai1, (Code.reponse essai1 u)) (IA.filtre 4 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
 					else choixniveau ();;
+
+
 
 
 (**Menu principale permettant de lancer le reste*)	
