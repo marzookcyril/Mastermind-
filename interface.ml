@@ -144,8 +144,8 @@ let carre couleur x y =
 
 let rec listtotuple tab (x,y) = 
 	match tab with 
-	|(t :: q) -> if t = "noir" then listtotuple q (x+1,y) else if t = "blanc" then listtotuple q (x,y+1) else listtotuple q (x,y)
-	|_ -> (0,0);;
+	|(t :: q) -> if t = black then listtotuple q (x+1,y) else if t = white then listtotuple q (x,y+1) else listtotuple q (x,y)
+	|_ -> (x,y);;
 
 
 (**Initialisation des parties cliquable
@@ -265,12 +265,10 @@ let rec recucodesecret temp =
 	else
 		[];;
 		
-		
-		
+			
 let rec recucodecarre temp = 
 	if temp < k then
-	 point_color (891 + temp*66) 56 :: recucodesecret (temp + 1) 
-		
+	 point_color (900 + temp*66) 56 :: recucodecarre (temp + 1) 	
 	else
 		[];;
 				
@@ -284,17 +282,12 @@ let toutecreation () =
 	boutonvalider ();;
 	
 	
-	
-	
-	
-	
 (**Creer la totalite des grilles de jeu*)
 let toutecreationia () = 
 	grilleee ();
 	grille 1 1 k;
 	grillereponse 1;
 	boutonvalideria ();;
-
 
 
 (**Change de couleur le rond sur lequel on clique 
@@ -346,21 +339,20 @@ let choixducodesecret () =
 
 (**Ecran de victoire*)	
 let ecran_victoire () =
-	moveto 900 500;
+	moveto 750 500;
 	draw_string "C'est gagne!";;
 	
 
 (**Ecran de defaite*)		
 let ecran_defaite () = 
-	moveto 900 500;
+	moveto 750 500;
 	draw_string "C'est perdu!";;
-	
-	
-let rec entreereponse a b = 
-	if a >= 755 && a <= 835 && b >= 64 && b <= 104 then
-		(let tableau = tableau_peg((recucodecarre 0)) in tableau)
-	else
-		(cliccouleurcarre a b (point_color a b) ; entreereponse a b);;
+
+
+let ecran_defaite_erreur () = 
+	clear_graph();
+	moveto 750 500;
+	draw_string "C'est perdu! c'est pas bien d'essayer de tricher";;
 	
 let validercarre () = 
 	draw_rect (800 - 15*k) 33 (15*k + 66*(k+1)) 66;
@@ -379,6 +371,28 @@ let validercarre () =
 	moveto 760 54;
 	draw_string "pour valider" ;
 	carrereponse ();;
+	
+	
+let rec entreereponse () = 
+	let bu = wait_next_event [Button_down] in 
+	if bu.mouse_x >= 755 && bu.mouse_x <= 835 && bu.mouse_y >= 46 && bu.mouse_y <= 84 then
+		draw_rect 10 10 1 1
+	else
+		(cliccouleurcarre bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y) ; entreereponse ());;
+	
+	
+let rec boucleia level code_secret a = 
+	(dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a));
+	validercarre());
+			pionplace (listtotuple ((recucodecarre 0)) (0,0)) (a+1); 
+	entreereponse ();
+	if (desome(snd (List.nth (code_secret) a))) = listtotuple ((recucodecarre 0)) (0,0) then 
+		(pionplace (desome(snd (List.nth (code_secret) a))) (a+1); 
+		if ((desome(snd (List.nth (code_secret) a))) = (k,0)) || a > (t-2) then fill_rect 100 100 1 1
+		else boucleia level code_secret (a+1))
+	else ecran_defaite_erreur();;
+	
+	
 	
 	
 (**Boucle principale permettant de jouer tout le reste*)
@@ -405,16 +419,7 @@ let rec jouer level codesecret essais possible acc =
 
             |_-> [];;
 
-let rec boucleia level code_secret a = 
-	let bv = wait_next_event [Button_down] in
-	(dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a));
-	validercarre());
-	let bu = wait_next_event [Button_down] in
-	entreereponse bu.mouse_x bu.mouse_y;
-	if (desome(snd (List.nth (code_secret) a))) = listtotuple (tableau_peg((recucodecarre 0))) (0,0) then 
-		(pionplace (desome(snd (List.nth (code_secret) a))) (a+1); boucleia level code_secret (a+1); 
-		if ((desome(snd (List.nth (code_secret) a))) = (k,0)) || a > (t-2) then (moveto 550 (75 * t)))
-	else boucleia level code_secret (a+1);;
+
 	
 
 (**Dessine les carres de choix de niveau*)			
