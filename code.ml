@@ -95,7 +95,7 @@ module Code :
 			  |(x,y) when x + y > nombre_pions  && x <= nombre_pions -> combinaisonTuple (n+1) 0
 			  |_ -> [];; 
 			  
-		let toutes_reponses = List.filter (fun t -> (t <> (3,1))) (combinaisonTuple 0 0);;
+		let toutes_reponses = List.filter (fun t -> (t <> ((nombre_pions -1),1))) (combinaisonTuple 0 0);;
 	
 	
 	

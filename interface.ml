@@ -16,9 +16,17 @@ let depart () =
 
 let k = 4 ;; (**Nombre pions*)
 let c = 6 ;;(**Nombre couleurs*)
-let t = 10 ;; (**Nombre tentatives*)
+let t = int_of_string(Sys.argv.(2)) ;; (**Nombre tentatives*)
 let l = [black;white;red;green;blue;yellow];; (**Couleurs possibles*)
-let essai1 = ["blanc";"blanc";"bleu";"bleu"]
+let joueur = (Sys.argv.(1));;
+let essai1 = ["blanc";"blanc";"bleu";"bleu";];;
+let nb = 
+	if int_of_string(Sys.argv.(3)) mod 2 = 0 then int_of_string(Sys.argv.(3))
+	else int_of_string(Sys.argv.(3)) +1 ;;
+
+
+
+
 
 (**Accueil avec boutons pour choix du mode*)
 let accueil () = 
@@ -279,16 +287,18 @@ let toutecreation () =
 	grille 1 1 k;
 	grillereponse 1;
 	rondreponse ();
-	boutonvalider ();;
-	
+	boutonvalider ();
+	moveto 250 50;
+	draw_string joueur;; 
 	
 (**Creer la totalite des grilles de jeu*)
 let toutecreationia () = 
 	grilleee ();
 	grille 1 1 k;
 	grillereponse 1;
-	boutonvalideria ();;
-
+	boutonvalideria ();
+	moveto 250 50;
+	draw_string joueur;; 
 
 (**Change de couleur le rond sur lequel on clique 
 	*@param 	première coordonnée 
@@ -334,7 +344,6 @@ let choixducodesecret () =
 	moveto 550 354;
 	draw_string "pour valider" ;
 	couleurpourlecode [];;
-
 
 
 (**Ecran de victoire*)	
@@ -384,7 +393,7 @@ let rec entreereponse () =
 let rec boucleia level code_secret a = 
 	(dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a));
 	validercarre());
-			pionplace (listtotuple ((recucodecarre 0)) (0,0)) (a+1); 
+	pionplace (listtotuple ((recucodecarre 0)) (0,0)) (a+1); 
 	entreereponse ();
 	if (desome(snd (List.nth (code_secret) a))) = listtotuple ((recucodecarre 0)) (0,0) then 
 		(pionplace (desome(snd (List.nth (code_secret) a))) (a+1); 
@@ -444,45 +453,120 @@ let dessin_carres_niveau () =
 	draw_string "Level 4" ;;
 
 
-(**Choix du niveau de l'ia*)	
-let rec choixniveau () = 
 
-	dessin_carres_niveau ();
+let dessin_carres_parties () = 
+	for i = 0 to (9) do draw_rect (50 + i*150) 400 100 50; moveto (95 + i* 150) 420 ; draw_string (string_of_int (2*(i+1))) done ;
+	moveto 700 500;
+	draw_string "Combien de parties?";
+	draw_rect 700 225 100 50;
+	moveto 710 250;
+	draw_string "Quitter";;
 	
+let rec choix_partie () = 
+	let bu = wait_next_event [Button_down] in
+	if bu.mouse_x >= 50 && bu.mouse_x <= 150 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		2
+	else
+	if bu.mouse_x >= 200 && bu.mouse_x <= 300 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		4
+	else
+	if bu.mouse_x >= 350 && bu.mouse_x <= 450 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		6
+	else
+	if bu.mouse_x >= 500 && bu.mouse_x <= 600 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		8
+	else
+	if bu.mouse_x >= 650 && bu.mouse_x <= 750 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		10
+	else
+	if bu.mouse_x >= 800 && bu.mouse_x <= 900 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		12
+	else
+	if bu.mouse_x >= 950 && bu.mouse_x <= 1050 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		14
+	else
+	if bu.mouse_x >= 1100 && bu.mouse_x <= 1200 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		16
+	else
+	if bu.mouse_x >= 1250 && bu.mouse_x <= 1350 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		18
+	else
+	if bu.mouse_x >= 1400 && bu.mouse_x <= 1500 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
+		20
+	else 
+	if bu.mouse_x >= 700 && bu.mouse_x <= 800 && bu.mouse_y >= 225 && bu.mouse_y <= 275 then
+		-2
+	else choix_partie();;
+	
+	
+	
+
+(**Choix du niveau de l'ia*)	
+let rec choixniveau a  = 
+	dessin_carres_niveau ();
 	let bu = wait_next_event [Button_down] in
 		if bu.mouse_x >= 350 && bu.mouse_x <= 450 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-			(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+			(clear_graph () ; if a  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
 							 else let u = (choixducodesecret()) in clear_graph() ; toutecreationia(); 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 1 u (essai1, (Code.reponse essai1 u)) Code.tous 0) 0)) 
 		else 
 			if bu.mouse_x >= 600 && bu.mouse_x <= 700 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-				(clear_graph () ; if 1+Random.int 2 = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
-								else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 2 u (essai1, (Code.reponse essai1 u)) (IA.filtre 2 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
+				(clear_graph () ; if a = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+								else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 3 u (essai1, (Code.reponse essai1 u)) (IA.filtre 3 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
 			else
 				if bu.mouse_x >= 850 && bu.mouse_x <= 950 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-					(clear_graph () ; if 1+Random.int 2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
-									else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 3 u (essai1, (Code.reponse essai1 u)) (IA.filtre 3 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
+					(clear_graph () ; if a  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+									else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 2 u (essai1, (Code.reponse essai1 u)) (IA.filtre 2 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
 				else 
 					if bu.mouse_x >= 1100 && bu.mouse_x <= 1200 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-						(clear_graph () ; if  2  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
+						(clear_graph () ; if  a  = 1 then (toutecreation () ; boucle 0 (IA.choix 1 [] Code.tous))
 										else let u = (choixducodesecret()) in clear_graph() ; toutecreationia() ; 	dessinecouleur 498 53 u ; (boucleia 0 (jouer 4 u (essai1, (Code.reponse essai1 u)) (IA.filtre 4 (essai1,Code.reponse essai1 u) Code.tous) 0) 0))
-					else choixniveau ();;
+					else choixniveau a;;
 
 
 
+let rec bouclejcj ad code_secret =
+	validercarre();
+	if ad > t then (moveto 550 (75 * t)) else 
+	let bu = wait_next_event [Button_down] in
+	if bu.mouse_x >= 345 && bu.mouse_x <= 425 && bu.mouse_y >= 33 && bu.mouse_y <= 73 then
+		(valider (ad+1) ; entreereponse(); 
+		let tableau = tableau_peg((recucode 0)) in 
+		if desome ((Code.reponse tableau code_secret)) = listtotuple ((recucodecarre 0)) (0,0) then
+			((pionplace (desome ((Code.reponse tableau code_secret)))) (ad+1); 
+			if desome ((Code.reponse tableau code_secret)) = (k,0) then 
+				moveto 5 5 
+			else bouclejcj (ad+1) code_secret)
+		else ecran_defaite_erreur() ; let u = wait_next_event [Button_down] in moveto 5 5 )
+	else
+		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); bouclejcj ad code_secret);;
 
+
+let rec jcj nb = 
+	let u = choixducodesecret () in 
+	(clear_graph () ; (toutecreation () ; bouclejcj 0 u); clear_graph()) ; 
+	let v = choixducodesecret () in 
+	(clear_graph () ; (toutecreation () ; bouclejcj 0 v)) ; clear_graph();;
+
+let ecran_fin() = 
+	moveto 750 500;
+	draw_string "Termine fin de parcours";;
+	
 (**Menu principale permettant de lancer le reste*)	
-let rec menu () =
+let rec menu nb =
 	clear_graph();
+	if nb <= 0 then ecran_fin()
+	else 
+	(clear_graph();
 	accueil();
 	let bu = wait_next_event [Button_down] in
 		if bu.mouse_x >= 700 && bu.mouse_x <= 800 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-			(clear_graph() ; choixniveau () ; let u = wait_next_event [Button_down] in menu ())
+			(clear_graph() ; if nb mod 2 = 0 then choixniveau 1 else choixniveau 2; let u = wait_next_event [Button_down] in menu (nb-1))
 		else 
 			if bu.mouse_x >= 950 && bu.mouse_x <= 1150 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-				(clear_graph () ; let u = choixducodesecret () in clear_graph () ; (toutecreation () ; boucle 0 u); clear_graph() ; let v = choixducodesecret () in clear_graph () ; (toutecreation () ; boucle 0 v))
+				(clear_graph () ; jcj ();  menu (nb-2))
 			else 
-				(clear_graph(); menu ());;
-		
-depart ();;
-menu ();; 
+				(clear_graph(); menu nb));;
 
+
+depart();;
+menu nb;;
