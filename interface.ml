@@ -11,7 +11,7 @@ let depart () =
 	Random.self_init();
 	open_graph "";
 	set_window_title "Mastermind";
-	resize_window 2000 1500;;
+	resize_window 1980 1080;;
 
 
 let k = 4 ;; (**Nombre pions*)
@@ -19,13 +19,22 @@ let c = 6 ;;(**Nombre couleurs*)
 let t = int_of_string(Sys.argv.(2)) ;; (**Nombre tentatives*)
 let l = [black;white;red;green;blue;yellow];; (**Couleurs possibles*)
 let joueur = (Sys.argv.(1));;
-let essai1 = ["blanc";"blanc";"bleu";"bleu";];;
+let essai1 = 
+	match k with
+	|x when x = 2 -> ["blanc";"bleu"] 
+	|x when x = 3 -> ["blanc";"blanc";"bleu"] 
+	|x when x = 4 -> ["blanc";"blanc";"bleu";"bleu"]
+	|x when x = 5 -> ["blanc";"blanc";"blanc";"bleu";"bleu"]
+	|x when x = 6 -> ["blanc";"blanc";"blanc";"bleu";"bleu";"bleu"] 
+	|_ -> ["blanc";"blanc";"bleu";"bleu"];;
+	
+	
 let nb = 
 	if int_of_string(Sys.argv.(3)) mod 2 = 0 then int_of_string(Sys.argv.(3))
 	else int_of_string(Sys.argv.(3)) +1 ;;
-
-
-
+let reponsepion = 
+	if Sys.argv.(4) = "true" then true
+	else false;;
 
 
 (**Accueil avec boutons pour choix du mode*)
@@ -156,7 +165,7 @@ let rec listtotuple tab (x,y) =
 	|_ -> (x,y);;
 
 
-(**Initialisation des parties cliquable
+(**Initialisation des parties cliquables
 	*@rond 		cercles permettant de choisir les couleurs
 	*@rect 		rectangle pour valider son choix
 *)	
@@ -280,7 +289,6 @@ let rec recucodecarre temp =
 	else
 		[];;
 				
-		
 (**Creer la totalite des grilles de jeu*)
 let toutecreation () = 
 	grilleee ();
@@ -391,7 +399,8 @@ let rec entreereponse () =
 	
 	
 let rec boucleia level code_secret a = 
-	(dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a));
+	if reponsepion = true then 
+	((dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a));
 	validercarre());
 	pionplace (listtotuple ((recucodecarre 0)) (0,0)) (a+1); 
 	entreereponse ();
@@ -399,9 +408,16 @@ let rec boucleia level code_secret a =
 		(pionplace (desome(snd (List.nth (code_secret) a))) (a+1); 
 		if ((desome(snd (List.nth (code_secret) a))) = (k,0)) || a > (t-2) then fill_rect 100 100 1 1
 		else boucleia level code_secret (a+1))
-	else ecran_defaite_erreur();;
-	
-	
+	else ecran_defaite_erreur())
+	else 
+		((dessinecouleur 498 (119+ a*66) (fst (List.nth (code_secret) a)));
+		pionplace (desome(snd (List.nth (code_secret) a))) (a+1); 
+		draw_rect 245 895 250 20;
+		moveto 250 900 ;
+		draw_string "Cliquez n'importe ou pour faire defiler";
+		let u = wait_next_event [Button_down] in 
+		if (((desome(snd (List.nth (code_secret) a))) = (k,0)) || a > (t-2)) then fill_rect 100 100 1 1
+		else boucleia level code_secret (a+1));;
 	
 	
 (**Boucle principale permettant de jouer tout le reste*)
@@ -430,7 +446,6 @@ let rec jouer level codesecret essais possible acc =
 
 
 	
-
 (**Dessine les carres de choix de niveau*)			
 let dessin_carres_niveau () = 
 	draw_rect 350 400 100 50;
@@ -452,53 +467,6 @@ let dessin_carres_niveau () =
 	draw_rect 1100 400 100 50;
 	draw_string "Level 4" ;;
 
-
-
-let dessin_carres_parties () = 
-	for i = 0 to (9) do draw_rect (50 + i*150) 400 100 50; moveto (95 + i* 150) 420 ; draw_string (string_of_int (2*(i+1))) done ;
-	moveto 700 500;
-	draw_string "Combien de parties?";
-	draw_rect 700 225 100 50;
-	moveto 710 250;
-	draw_string "Quitter";;
-	
-let rec choix_partie () = 
-	let bu = wait_next_event [Button_down] in
-	if bu.mouse_x >= 50 && bu.mouse_x <= 150 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		2
-	else
-	if bu.mouse_x >= 200 && bu.mouse_x <= 300 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		4
-	else
-	if bu.mouse_x >= 350 && bu.mouse_x <= 450 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		6
-	else
-	if bu.mouse_x >= 500 && bu.mouse_x <= 600 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		8
-	else
-	if bu.mouse_x >= 650 && bu.mouse_x <= 750 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		10
-	else
-	if bu.mouse_x >= 800 && bu.mouse_x <= 900 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		12
-	else
-	if bu.mouse_x >= 950 && bu.mouse_x <= 1050 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		14
-	else
-	if bu.mouse_x >= 1100 && bu.mouse_x <= 1200 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		16
-	else
-	if bu.mouse_x >= 1250 && bu.mouse_x <= 1350 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		18
-	else
-	if bu.mouse_x >= 1400 && bu.mouse_x <= 1500 && bu.mouse_y >= 400 && bu.mouse_y <= 450 then
-		20
-	else 
-	if bu.mouse_x >= 700 && bu.mouse_x <= 800 && bu.mouse_y >= 225 && bu.mouse_y <= 275 then
-		-2
-	else choix_partie();;
-	
-	
 	
 
 (**Choix du niveau de l'ia*)	
@@ -525,23 +493,37 @@ let rec choixniveau a  =
 
 
 let rec bouclejcj ad code_secret =
-	validercarre();
-	if ad > t then (moveto 550 (75 * t)) else 
-	let bu = wait_next_event [Button_down] in
-	if bu.mouse_x >= 345 && bu.mouse_x <= 425 && bu.mouse_y >= 33 && bu.mouse_y <= 73 then
-		(valider (ad+1) ; entreereponse(); 
-		let tableau = tableau_peg((recucode 0)) in 
-		if desome ((Code.reponse tableau code_secret)) = listtotuple ((recucodecarre 0)) (0,0) then
+	if reponsepion = true then 
+		(validercarre();
+		if ad > t then (moveto 550 (75 * t)) else 
+		let bu = wait_next_event [Button_down] in
+		if bu.mouse_x >= 345 && bu.mouse_x <= 425 && bu.mouse_y >= 33 && bu.mouse_y <= 73 then
+			(valider (ad+1) ; entreereponse(); 
+			let tableau = tableau_peg((recucode 0)) in 
+			if desome ((Code.reponse tableau code_secret)) = listtotuple ((recucodecarre 0)) (0,0) then
+				((pionplace (desome ((Code.reponse tableau code_secret)))) (ad+1); 
+				if desome ((Code.reponse tableau code_secret)) = (k,0) then 
+					moveto 5 5 
+				else bouclejcj (ad+1) code_secret)
+			else ecran_defaite_erreur() ; let u = wait_next_event [Button_down] in moveto 5 5 )
+		else
+			(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); bouclejcj ad code_secret))
+	else 
+		(if ad > t then (moveto 550 (75 * t)) else 
+		(let bu = wait_next_event [Button_down] in
+		if bu.mouse_x >= 345 && bu.mouse_x <= 425 && bu.mouse_y >= 33 && bu.mouse_y <= 73 then
+			(valider (ad+1);
+			let tableau = tableau_peg((recucode 0)) in 
 			((pionplace (desome ((Code.reponse tableau code_secret)))) (ad+1); 
 			if desome ((Code.reponse tableau code_secret)) = (k,0) then 
-				moveto 5 5 
-			else bouclejcj (ad+1) code_secret)
-		else ecran_defaite_erreur() ; let u = wait_next_event [Button_down] in moveto 5 5 )
-	else
-		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); bouclejcj ad code_secret);;
+				let b = wait_next_event [Button_down] in moveto 5 5
+			else bouclejcj (ad+1) code_secret))
+		else
+			(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); bouclejcj ad code_secret)));;
 
 
-let rec jcj nb = 
+
+let rec jcj () = 
 	let u = choixducodesecret () in 
 	(clear_graph () ; (toutecreation () ; bouclejcj 0 u); clear_graph()) ; 
 	let v = choixducodesecret () in 
@@ -549,12 +531,12 @@ let rec jcj nb =
 
 let ecran_fin() = 
 	moveto 750 500;
-	draw_string "Termine fin de parcours";;
+	draw_string "Termine fin de partie";;
 	
 (**Menu principale permettant de lancer le reste*)	
 let rec menu nb =
 	clear_graph();
-	if nb <= 0 then ecran_fin()
+	if nb <= 0 then (ecran_fin() ; let b = wait_next_event [Button_down] in moveto 5 5)
 	else 
 	(clear_graph();
 	accueil();
