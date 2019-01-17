@@ -2,7 +2,7 @@
 open Code;;
 Random.self_init();;
 
-module Naifc : 
+module Niveau2 : 
 	sig 
 			
 		(** Choisit un code a proposer 
@@ -23,14 +23,17 @@ module Naifc :
 	
 	
 		
-		let without  a = 
+	let without  a = 
 		match a with 
 		|Some(x,y) -> (x,y)
 		|_-> failwith "reponse pas corecte";;
 		
 	
 	(** Apres avoir effectué le filtre, on choisit le code qui a le plus de couleur
-		en commun avec l'essais *) 
+		en commun avec l'essais 
+	  *@param		essai
+	  *@param		liste des possibles
+	  *@return		code a tester*)
 	let choix essais possibles = 
 		let code = List.nth essais 0 in 	
 			let p = List.fold_left ( fun acc t -> let (u,v) = without (Code.reponse code t) in if v >= fst acc then (v,t) else acc) (0,[]) possibles in 
@@ -47,7 +50,10 @@ module Naifc :
 	
 	
 	(** Ici il faut prendre en compte seulement les pions bien placés 
-		et pas les couleurs *)
+		et pas les couleurs
+	  *@param		essai
+	  *@param		liste des possibles
+	  *@return		nouvelle liste des possibles*)
 	let filtre essais possibles = 
 		match essais with
 		|(l , Some(x,y)) -> List.fold_left ( fun acc t -> if without_Some (Code.reponse t l) = x then t :: acc else acc ) [] possibles 

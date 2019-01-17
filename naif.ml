@@ -1,7 +1,7 @@
 (** Algorithme d'ia aléatoire *)
 open Code;;
 
-module Naif1 : 
+module Naif : 
 	sig 
 			
 		(** Choisit un code a proposer 
@@ -13,8 +13,11 @@ module Naif1 :
 
 	end = struct 
 	
-	(** on enleve de la liste de possible tout les codes deja essayés (dans essais) 
-		puis on en choisis un aléatoirement *) 
+	(** On enleve de la liste de possible tout les codes deja essayés (dans essais) 
+		puis on en choisis un aléatoirement 
+	  *@param		essai
+	  *@param		liste des possibles
+	  *@return		code a tester*)
 	let choix essais possibles = 
 		let l = List.filter ( fun t -> if List.mem t essais then false else true) possibles in 
 			List.nth l (Random.int (List.length l));;

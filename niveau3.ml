@@ -1,7 +1,7 @@
 (** Algorithme d'ia naif *)
 open Code;;
 
-module Naif2 : 
+module Niveau3 : 
 	sig 
 			
 		(** Choisit un code a proposer 
@@ -20,18 +20,24 @@ module Naif2 :
 
 	end = struct 
 	
-	(** on enleve de la liste de possible tout les codes deja essayés (dans essais) 
-		puis on en choisis un aléatoirement *) 
-		
+	(** On enleve de la liste de possible tout les codes deja essayés (dans essais) 
+		puis on en choisis un aléatoirement 
+	  *@param		essai
+	  *@param		liste des possibles
+	  *@return		code a tester*)
 	let choix essais possibles = 
 		let l = List.filter ( fun t -> if List.mem t essais then false else true) possibles in 
 			List.nth l (Random.int (List.length l));;
 
 			
+	
+		
 	(** On prend dans la liste des possibles tout les éléments ayant 
 		la même reponse que l'essai par rapport au code secret que la reponse de l'essai
-		avec les autres codes possibles *)
-		
+		avec les autres codes possibles
+	  *@param		essai
+	  *@param		liste des possibles
+	  *@return		nouvelle liste des possibles*)	
 	let filtre essais possibles = 
 		match essais with
 		|(l , Some(x,y)) -> List.fold_left ( fun acc t -> if (Code.reponse t l) = Some(x,y) then t :: acc else acc ) [] possibles 

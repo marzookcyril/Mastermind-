@@ -1,8 +1,8 @@
 (** Algorithmes de recherche de code *)
 open Code
-open Naif1
-open Naif2
-open Naifc
+open Naif
+open Niveau3
+open Niveau2
 open Knuth;;
 
 module IA :
@@ -46,27 +46,19 @@ module IA :
 		  * il faut utiliser filtre a chaque étape et il manque le parametre reponse*)
 		let choix x essais possible = 
 			match x with 
-			|a when a = 1 -> Naif1.choix essais possible
-			|a when a = 2 -> Naif2.choix essais possible
-			|a when a = 3 -> Naifc.choix essais possible
+			|a when a = 1 -> Naif.choix essais possible
+			|a when a = 2 -> Niveau3.choix essais possible
+			|a when a = 3 -> Niveau2.choix essais possible
 			|_ -> failwith(" il n'y a pas autant d'ia ");;
 		
 		(** De même on applique la fonction filtre de chaque ia excepté celle de : 
 		  * l'ia Naif1 car le code est choisi aléatoirement dans la fonction choix *)
 		let filtre x essais possible = 
 			match x with 
-			|a when a = 2 -> Naif2.filtre essais possible
-			|a when a = 3 -> Naifc.filtre essais possible
+			|a when a = 2 -> Niveau3.filtre essais possible
+			|a when a = 3 -> Niveau2.filtre essais possible
 			|a when a = 4 -> Knuth.filtre essais possible
 			|_ -> failwith(" il n'y a pas autant d'ia ");;
 		
-		let choisir_algo x essais possible = 
-			match x with 
-			|a when a = 1 -> Naif1.choix [fst(essais)] possible
-			|a when a = 2 -> Naif2.choix [fst(essais)] (Naif2.filtre essais possible)
-			|a when a = 3 -> Naifc.choix [fst(essais)] (Naifc.filtre essais possible)
-			|a when a = 4 -> Knuth.knuths essais possible
-			|_ -> failwith(" il n'y a pas autant d'ia ");;
-	
 		
 	end;;
