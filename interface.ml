@@ -486,12 +486,12 @@ let rec boucle ad code_secret =
 	if ad > t then let p = wait_next_event [Button_down] in (moveto 550 (75 * t)) else 
 	let bu = wait_next_event [Button_down] in
 	if bu.mouse_x >= 345 && bu.mouse_x <= 425 && bu.mouse_y >= 33 && bu.mouse_y <= 73 then
-		(valider ad ; let tableau = tableau_peg((recucode 0)) in (pionplace (desome ((Code.reponse tableau code_secret)))) ad;boucle (ad+1) code_secret) 
+		(valider ad ; let tableau = tableau_peg((recucode 0)) in ((pionplace (desome ((Code.reponse tableau code_secret))) ad); if desome ((Code.reponse tableau code_secret)) = (k,0) then let a = wait_next_event [Button_down] in moveto 5 5 else boucle (ad+1) code_secret)) 
 	else
 		(cliccouleur bu.mouse_x bu.mouse_y (point_color bu.mouse_x bu.mouse_y); boucle ad code_secret);;
 		
 		
-(** Supprime un élement d'une liste 
+(**Supprime un élement d'une liste 
 	*@param 	element à supprimer 
 	*@param		liste
 	*@return    liste sans l'élement a
@@ -499,14 +499,13 @@ let rec boucle ad code_secret =
 let supprime a l1 = List.filter (fun t -> if List.mem t [a] then false else true) l1;;
 
 
-(**?
-	*@param 	niveau pour choisir l'ia
-	*@param		le code secret
-	*@param 	le première essai 
-	*@param		liste des codes possibles 
-	*@param		accumulateur 
-	*@return    ?
-	*)	
+(**Fonction qui fait tourner l'algo de knuth 
+	  *@param		le code secret
+	  *@param		l'essai
+	  *@param		liste des possibles
+	  *@param		accumulateur pour compter le nombre d'essai
+	  *@return		liste des code avec la reponse
+	  *)
 let rec jouer level codesecret essais possible acc = 
 			match essais with 
 			|(l , Some(x,y)) when acc <= t -> if l = codesecret then [essais] else let r = choisir_algo level essais possible in 
