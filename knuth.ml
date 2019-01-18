@@ -57,7 +57,7 @@ module Knuth :
 	  *@return		pire poids du code 
 	  *)
 	let pire_cas code possible reponse =
-		List.fold_left (fun acc t -> let x = (poid code t possible) in if x >= acc then x else acc ) 0 reponse;;		
+		List.fold_left (fun acc t -> let x = (poid code t possible) in if x > acc then x else acc ) 0 reponse;;		
 
 
 
@@ -69,7 +69,7 @@ module Knuth :
 	  *)	
 	let trouver_code essai possible = 
 		let l = (filtre essai Code.tous) in 
-			List.fold_left(fun acc t -> let (u,v) = acc in let x = (pire_cas t l Code.toutes_reponses) in if x <= u then (x,t) else acc )(max_int,[""]) (filtre essai possible);;
+			List.fold_left(fun acc t -> let (u,v) = acc in let x = (pire_cas t l Code.toutes_reponses) in if x < u then (x,t) else acc )(max_int,[""]) (filtre essai possible);;
 	
 	
 	
